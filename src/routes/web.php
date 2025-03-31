@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('/books', [\App\Http\Controllers\Books\BookController::class, 'index'])
+    ->name('books.index');
 Route::get('/', function () {
     return view('welcome');
 });
