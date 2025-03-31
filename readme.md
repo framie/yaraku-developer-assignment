@@ -29,3 +29,21 @@ docker-compose stop \
   && docker-compose rm -f mysql \
   && docker-compose up -d
 ``` 
+
+## Unit tests
+Unit tests are located within the `src/tests` folder of the application.
+
+To run the unit tests, use the following command:
+```
+vendor/bin/phpunit
+```
+To run the unit tests via the docker instance:
+```
+docker exec assignment01-laravel vendor/bin/phpunit
+```
+
+Alternatively, the `--testdox` flag can be included for more verbose and detailed reporting:
+```
+vendor/bin/phpunit --testdox
+docker exec assignment01-laravel vendor/bin/phpunit --testdox
+```
