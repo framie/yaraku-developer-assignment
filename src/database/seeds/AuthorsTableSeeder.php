@@ -12,16 +12,6 @@ class AuthorsTableSeeder extends Seeder
      */
     public function run()
     {
-        Author::create([
-            'name' => 'F. Scott Fitzgerald',
-        ]);
-
-        Author::create([
-            'name' => 'George Orwell',
-        ]);
-
-        Author::create([
-            'name' => 'J. R. R. Tolkien',
-        ]);
+        factory(Author::class, 5)->create();
     }
 }
