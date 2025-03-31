@@ -17,6 +17,9 @@ class CreateAuthorsTable extends Migration
             $table->bigIncrements('id'); // primary key in Laravel 6
             $table->string('name')->unique(); // assume each author name is unique
             $table->timestamps(); // adds created_at and updated_at columns
+
+            // add index to the 'name' column as it will be used for filtering
+            $table->index('name');
         });
     }
 

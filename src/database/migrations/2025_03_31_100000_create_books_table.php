@@ -22,6 +22,9 @@ class CreateBooksTable extends Migration
 
             // define author_id as foreign key
             $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade');
+
+            // add index to the 'title' column as it will be used for filtering
+            $table->index('title');
         });
     }
 
