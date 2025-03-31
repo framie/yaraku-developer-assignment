@@ -11,6 +11,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        // order is important as books rely on authors being created beforehand
+        $this->call([
+            AuthorsTableSeeder::class,
+            BooksTableSeeder::class
+        ]);
     }
 }
