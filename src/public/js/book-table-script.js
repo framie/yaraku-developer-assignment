@@ -129,3 +129,8 @@ const refreshBookData = () => {
     })
     .catch(error => console.error("Error:", error));
 }
+
+/**
+ * Ensure that data is reloaded when the browser back/forward buttons are pressed
+ */
+window.addEventListener("popstate", refreshBookData);
