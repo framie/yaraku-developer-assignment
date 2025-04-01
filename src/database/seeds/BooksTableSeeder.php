@@ -15,10 +15,8 @@ class BooksTableSeeder extends Seeder
     {
         $authors = Author::all();
 
-        if (count($authors) > 0) {
-            foreach ($authors as $author) {
-                factory(Book::class, 2)->create(['author_id' => $author->id]);
-            }
+        foreach ($authors as $author) {
+            factory(Book::class, 2)->create(['author_id' => $author->id]);
         }
     }
 }
