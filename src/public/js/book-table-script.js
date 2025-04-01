@@ -1,59 +1,75 @@
 // Contains JS code related to the book-table component.
 
 /**
- * Update search params and push new url into browser history.
+ * Updates search parameters and pushes the new URL into browser history.
  *
- * @param {string} key - The search param key.
- * @param {string} value - The search param value.
+ * @param {Object} params - An object containing key-value pairs to update in the URL.
  * @returns {void}
  */
-const updateSearchParams = (key, value) => {
+const updateSearchParams = (params) => {
     const url = new URL(window.location);
-    url.searchParams.set(key, value);
+    Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+    });
     window.history.pushState({}, '', url);
-}
+};
 
 /**
- * Handles logic to update and refresh data when buttons are clicked.
+ * Handles button click events and updates search parameters accordingly in
+ * order to retrieve book data based on current search, filter and pagination.
  *
- * @param {HTMLButtonElement} button - Button where handler function was called.
+ * @param {HTMLButtonElement} button - The clicked button element.
  * @returns {void}
  */
 const buttonHandler = (button) => {
     const urlParams = new URLSearchParams(window.location.search);
-    const sort = urlParams.get('sort');
-    const order = urlParams.get('order');
+    let params = {};
     let key = button.dataset.key;
     let value = button.dataset.value;
     if (key === 'page') {
         const page = +urlParams.get('page') || 1;
-        if (page === 1 && value === 'prev') return;
-        value = value === 'prev' ? page - 1 : page + 1;
+        params[key] = value === 'prev' ? max(1, page - 1) : page + 1;
     } else if (key === 'sort') {
-        const sortButtonClass = 'button-sort';
-        const sortButtons = document.querySelectorAll(`.${sortButtonClass}`);
-        if (sort === value) {
-            key = 'order';
-            value = order === 'asc' ? 'desc' : 'asc';
-            sortButtons.forEach(sortButton =>
-                sortButton.classList.remove(`${sortButtonClass}--${order}`)
-            );
-            sortButtons.forEach(sortButton =>
-                sortButton.classList.add(`${sortButtonClass}--${value}`)
-            );
-        } else {
-            const activeClass = `${sortButtonClass}--active`;
-            sortButtons.forEach(sortButton => {
-                sortButton.classList.remove(activeClass, `${sortButtonClass}--desc`);
-                sortButton.classList.add(`${sortButtonClass}--asc`);
-            });
-            button.classList.add(activeClass);
-        }
+        params = handleSortButton(button, urlParams);
     }
-    updateSearchParams(key, value);
+    updateSearchParams(params);
     refreshBookData();
 }
 
+/**
+ * Handles sort button logic, toggling the order or activating a new sort column.
+ *
+ * @param {HTMLElement} button - The clicked sorting button.
+ * @param {URLSearchParams} urlParams - The current URL search parameters.
+ * @returns {Object} - An object containing key-value pairs to update in the URL.
+ */
+const handleSortButton = (button, urlParams) => {
+    const sortButtonClass = 'button-sort';
+    const sortButtons = document.querySelectorAll(`.${sortButtonClass}`);
+    const currentSort = urlParams.get('sort');
+    const currentOrder = urlParams.get('order') || 'asc';
+    const newSort = button.dataset.value;
+
+    // When clicking the current sort column, toggle the sort order.
+    if (currentSort === newSort) {
+        const newOrder = currentOrder === 'asc' ? 'desc' : 'asc'
+        sortButtons.forEach(sortButton => {
+            sortButton.classList.remove(`${sortButtonClass}--${currentOrder}`);
+            sortButton.classList.add(`${sortButtonClass}--${newOrder}`);
+        });
+        return { 'order': newOrder };
+
+    // Otherwise, change the sort column without affecting the sort order.
+    } else {
+        const activeClass = `${sortButtonClass}--active`;
+        sortButtons.forEach(sortButton => {
+            sortButton.classList.remove(activeClass, `${sortButtonClass}--desc`);
+            sortButton.classList.add(`${sortButtonClass}--asc`);
+        });
+        button.classList.add(activeClass);
+        return { 'sort': newSort, 'order': 'asc' };
+    }
+};
 
 /**
  * Populates the rows in the books table based on provided data.
@@ -68,9 +84,9 @@ const populateBookRows = books => {
     bookList.innerHTML = '';
     books.forEach(book => {
         let row = document.createElement('tr');
-        let modifyButton = `<button class="${buttonClass} ${buttonClass}--modify"`;
+        let modifyButton = `<button class="${buttonClass}--modify"`;
         modifyButton += ` onclick="modifyHandler(this)">Modify</button>`;
-        let deleteButton = `<button class="${buttonClass} ${buttonClass}--delete"`;
+        let deleteButton = `<button class="${buttonClass}--delete"`;
         deleteButton += ` onclick="deleteHandler(this)">Delete</button>`;
         row.classList.add('book-row');
         row.setAttribute('data-book-id', book.id);
@@ -170,7 +186,5 @@ const deleteHandler = button => {
     .catch(error => console.error('Error when deleting book:', error));
 }
 
-/**
- * Ensure that data is reloaded when the browser back/forward buttons are pressed.
- */
+// Ensure that data is reloaded when the browser back/forward buttons are pressed.
 window.addEventListener("popstate", refreshBookData);

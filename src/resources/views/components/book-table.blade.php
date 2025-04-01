@@ -1,5 +1,31 @@
 <div id="book-table" data-url="{{ route('books.index') }}">
     @csrf
+    <div class="search-container">
+        <span>Search
+        <div class="search-group">
+            <label for="author">Book Title:</label>
+            <input type="text" name="book_title" class="input-text" required>
+        </div>
+        <div class="search-group">
+            <label for="author">Author Name:</label>
+            <input type="text" name="author_name" class="input-text" required>
+        </div>
+        <button
+            onclick="buttonHandler(this)"
+            data-key="search"
+            data-value="submit"
+        >
+            Submit
+        </button>
+        <button
+            onclick="buttonHandler(this)"
+            data-key="search"
+            data-value="reset"
+        >
+            Reset
+        </button>
+
+    </div>
     <table>
         <thead>
             <tr>
@@ -44,7 +70,7 @@
                     <td>
                         <button
                             onclick="modifyHandler(this)"
-                            class="button-book button-book--modify"
+                            class="button-book--modify"
                         >
                             Modify
                         </button>
@@ -52,7 +78,7 @@
                     <td>
                         <button
                             onclick="deleteHandler(this)"
-                            class="button-book button-book--delete"
+                            class="button-book--delete"
                         >
                             Delete
                         </button>
@@ -65,7 +91,7 @@
     <div class="pagination">
         <button
             onclick="buttonHandler(this)"
-            class="button-book pagination-prev{{ $books->onFirstPage() ? ' disabled' : '' }}"
+            class="pagination-prev{{ $books->onFirstPage() ? ' disabled' : '' }}"
             data-key="page"
             data-value="prev"
         >
@@ -80,7 +106,7 @@
 
         <button
             onclick="buttonHandler(this)"
-            class="button-book pagination-next{{ $books->hasMorePages() ? '' : ' disabled' }}"
+            class="pagination-next{{ $books->hasMorePages() ? '' : ' disabled' }}"
             data-key="page"
             data-value="next"
         >
