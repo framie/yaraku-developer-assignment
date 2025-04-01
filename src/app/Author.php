@@ -17,4 +17,15 @@ class Author extends Model
     {
         return $this->hasMany(Book::class);
     }
+
+    /**
+     * Retrieve an author by name or create a new one if it doesn't exist.
+     *
+     * @param string $name
+     * @return \App\Author
+     */
+    public static function findOrCreateByName($name)
+    {
+        return self::firstOrCreate(['name' => $name]);
+    }
 }
