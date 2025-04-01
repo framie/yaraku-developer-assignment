@@ -13,7 +13,7 @@ class BookTest extends TestCase
     use RefreshDatabase;
     
     /**
-     * Test book creation and author relationship
+     * Test book creation and author relationship.
      *
      * @return void
      */
@@ -33,7 +33,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test book title is required
+     * Test book title is required.
      *
      * @return void
      */
@@ -45,7 +45,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test book author_id is required
+     * Test book author_id is required.
      *
      * @return void
      */
@@ -57,7 +57,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test book author_id must be valid
+     * Test book author_id must be valid.
      *
      * @return void
      */
@@ -65,12 +65,12 @@ class BookTest extends TestCase
     {
         $this->expectException(QueryException::class);
         
-        // bigIncrements starts at 1
+        // BigIncrements starts at 1.
         factory(Book::class)->create(['author_id' => 0]);
     }
     
     /**
-     * Test book published date is optional
+     * Test book published date is optional.
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test duplicate book title cannot be used
+     * Test duplicate book title cannot be used.
      *
      * @return void
      */

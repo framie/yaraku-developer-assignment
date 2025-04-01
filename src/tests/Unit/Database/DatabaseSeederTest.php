@@ -13,7 +13,7 @@ class DatabaseSeederTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Test authors seeder for successful data insertion
+     * Test authors seeder for successful data insertion.
      *
      * @return void
      */
@@ -25,7 +25,7 @@ class DatabaseSeederTest extends TestCase
     }
 
     /**
-     * Test books seeder does not insert data if authors are not seeded first 
+     * Test books seeder does not insert data if authors are not seeded first.
      *
      * @return void
      */
@@ -37,7 +37,7 @@ class DatabaseSeederTest extends TestCase
     }
 
     /**
-     * Test books seeder properly inserts data if authors are seeded first 
+     * Test books seeder properly inserts data if authors are seeded first.
      *
      * @return void
      */
