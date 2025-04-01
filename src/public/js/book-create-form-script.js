@@ -8,11 +8,13 @@
  */
 const submitBookCreateForm = () => {
     const bookForm = document.getElementById("book-create-form");
+    if (!bookForm) return;
+    const routeUrl = bookForm.getAttribute('action');
     const token = bookForm.querySelector('input[name="_token"]').value;
     const message = bookForm.querySelector("#book-create-message");
     message.textContent = "";
 
-    fetch("/books", {
+    fetch(routeUrl, {
         method: "POST",
         body: new FormData(bookForm),
         headers: {

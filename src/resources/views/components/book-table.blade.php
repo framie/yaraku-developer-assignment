@@ -1,4 +1,4 @@
-<div id="book-table">
+<div id="book-table" data-url="{{ route('books.index') }}">
     <table>
         <thead>
             <tr>
@@ -32,7 +32,7 @@
             </tr>
         </thead>
         <tbody id="book-list">
-            @foreach ($books as $book)
+        @foreach ($books as $book)
                 <tr>
                     <td>{{ $book->title }}</td>
                     <td>{{ $book->author->name }}</td>

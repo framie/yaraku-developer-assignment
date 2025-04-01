@@ -111,12 +111,15 @@ const refreshPagination = (from, to, total, nextPageUrl = None) => {
  * @returns {void}
  */
 const refreshBookData = () => {
+    const tableElement = document.getElementById('book-table');
+    if (!tableElement) return;
+    const routeUrl = tableElement.dataset.url;
     const urlParams = new URLSearchParams(window.location.search);
     const sortBy = urlParams.get('sortBy');
     const order = urlParams.get('order');
     const page = urlParams.get('page');
 
-    fetch(`/books?sort_by=${sortBy}&order=${order}&page=${page}`, {
+    fetch(`${routeUrl}?sort_by=${sortBy}&order=${order}&page=${page}`, {
         method: "GET",
         headers: {"X-Requested-With": "XMLHttpRequest"}
     })

@@ -1,5 +1,5 @@
 <div>
-    <form id="book-create-form" method="POST" action="/books">
+    <form id="book-create-form" method="POST" action="{{ route('books.store') }}">
         @csrf
         <div class="form-group">
             <label for="title">Book Title:</label>
