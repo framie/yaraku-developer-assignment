@@ -16,27 +16,28 @@ class BookController extends Controller
     |
     | This controller is responsible for handling the logic to view or make
     | changes to books within the database. Includes functionality to sort by
-    | Book Title, Book Publish Date or Author Name.
+    | Book Title, Book Publish Date or Author Name, as well as add new or
+    | delete existing books.
     |
     */
 
     /**
-     * Display all books
+     * Display all books.
      *
      * @param  \Illuminate\Http\Request
      * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
-        // get the sort parameters
+        // Get the sort parameters.
         $sort = $request->input('sort');
         $order = $request->input('order');
         $pageSize = 10;
 
-        // mapping of sort values to queries
+        // Mapping of sort values to queries.
         $validSortValues = ['title', 'author_name', 'publish_date'];
         
-        // validate request input values
+        // Validate request input values
         if (!in_array($sort, $validSortValues)) {
             $sort = 'title';
         }
@@ -44,7 +45,7 @@ class BookController extends Controller
             $order = 'asc';
         }
 
-        // build SQL query based on request params
+        // Build SQL query based on request params.
         $query = Book::query();
         if ($sort == 'author_name') {
             $query->leftJoin('authors', 'books.author_id', '=', 'authors.id');
@@ -57,12 +58,12 @@ class BookController extends Controller
             }
         }
 
-        // retrieve current page of results
+        // Retrieve current page of results.
         $books = $query->paginate($pageSize);
         $from = ($books->currentPage() - 1) * $pageSize + 1;
         $to = min($from + $pageSize - 1, $books->total());
 
-        // if request is ajax, return JSON response
+        // If request is ajax, return JSON response.
         if ($request->ajax()) {
             return response()->json([
                 'books' => $books,
@@ -75,14 +76,14 @@ class BookController extends Controller
     }
 
     /**
-     * Create and store a new book in the database
+     * Create and store a new book in the database.
      *
      * @param  \Illuminate\Http\Request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        // validates the data and will automatically send 422 error response on failure
+        // Validates the data and will automatically send 422 error response on failure.
         $validatedData = $request->validate([
             'title' => 'required|unique:books,title|max:255',
             'author_name' => 'required|string|max:255',
@@ -92,7 +93,7 @@ class BookController extends Controller
             'author_name.required' => 'The book author is required.',
         ]);
 
-        // create author if not already existing
+        // Create author if not already existing.
         $author = Author::findOrCreateByName($request->input('author_name'));
         $publishDate = $request->input('publish_date');
 
@@ -102,10 +103,42 @@ class BookController extends Controller
             'published_at' => strtotime($publishDate) ? $publishDate : null
         ]);
 
-        return response()->json([
-            'type' => 'success',
-            'message' => 'Book added successfully!',
-            'data' => $book
-        ]);
+        $message = 'Book added successfully.';
+
+        // If request is ajax, return JSON response.
+        if ($request->ajax()) {
+            return response()->json([
+                'type' => 'success',
+                'message' => $message,
+                'data' => $book
+            ]);
+        }
+
+        return redirect()->route('books.index')->with('message', $message);
+    }
+
+    /**
+     * Removes a book from the database.
+     *
+     * @param  \Illuminate\Http\Request
+     * @param  \App\Book
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
+    public function destroy(Request $request, Book $book)
+    {
+        // No need to validate as it is done via the route.
+        $book->delete();
+
+        $message = 'Book deleted successfully.';
+
+        // If request is ajax, return JSON response.
+        if ($request->ajax()) {
+            return response()->json([
+                'type' => 'success',
+                'message' => $message
+            ]);
+        }
+
+        return redirect()->route('books.index')->with('message', $message);
     }
 }

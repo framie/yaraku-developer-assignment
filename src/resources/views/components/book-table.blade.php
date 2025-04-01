@@ -1,4 +1,5 @@
 <div id="book-table" data-url="{{ route('books.index') }}">
+    @csrf
     <table>
         <thead>
             <tr>
@@ -40,8 +41,22 @@
                     <td>{{ $book->title }}</td>
                     <td>{{ $book->author->name }}</td>
                     <td>{{ $book->published_at }}</td>
-                    <td><button class="button-book button-book--modify">Modify</button></td>
-                    <td><button class="button-book button-book--delete">Delete</button></td>
+                    <td>
+                        <button
+                            onclick="modifyHandler(this)"
+                            class="button-book button-book--modify"
+                        >
+                            Modify
+                        </button>
+                    </td>
+                    <td>
+                        <button
+                            onclick="deleteHandler(this)"
+                            class="button-book button-book--delete"
+                        >
+                            Delete
+                        </button>
+                    </td>
                 </tr>
             @endforeach
         </tbody>

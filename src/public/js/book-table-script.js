@@ -1,7 +1,7 @@
-// Contains JS code related to the book-table component
+// Contains JS code related to the book-table component.
 
 /**
- * Update search params and push new url into browser history
+ * Update search params and push new url into browser history.
  *
  * @param {string} key - The search param key.
  * @param {string} value - The search param value.
@@ -16,7 +16,7 @@ const updateSearchParams = (key, value) => {
 /**
  * Handles logic to update and refresh data when buttons are clicked.
  *
- * @param {HTMLButtonElement} button - Search param key associated with the button.
+ * @param {HTMLButtonElement} button - Button where handler function was called.
  * @returns {void}
  */
 const buttonHandler = (button) => {
@@ -25,7 +25,6 @@ const buttonHandler = (button) => {
     const order = urlParams.get('order');
     let key = button.dataset.key;
     let value = button.dataset.value;
-    console.log(key, value)
     if (key === 'page') {
         const page = +urlParams.get('page') || 1;
         if (page === 1 && value === 'prev') return;
@@ -63,18 +62,24 @@ const buttonHandler = (button) => {
  * @returns {void}
  */
 const populateBookRows = books => {
-    const bookList = document.getElementById("book-list");
+    const bookList = document.getElementById('book-list');
     if (!bookList) return;
     const buttonClass = 'button-book';
-    bookList.innerHTML = "";
+    bookList.innerHTML = '';
     books.forEach(book => {
-        let row = document.createElement("tr");
+        let row = document.createElement('tr');
+        let modifyButton = `<button class="${buttonClass} ${buttonClass}--modify"`;
+        modifyButton += ` onclick="modifyHandler(this)">Modify</button>`;
+        let deleteButton = `<button class="${buttonClass} ${buttonClass}--delete"`;
+        deleteButton += ` onclick="deleteHandler(this)">Delete</button>`;
+        row.classList.add('book-row');
+        row.setAttribute('data-book-id', book.id);
         row.innerHTML = `
             <td>${book.title}</td>
             <td>${book.author ? book.author.name : book.name}</td>
             <td>${book.published_at || ''}</td>
-            <td><button class="${buttonClass} ${buttonClass}--modify">Modify</button></td>
-            <td><button class="${buttonClass} ${buttonClass}--delete">Delete</button></td>
+            <td>${modifyButton}</td>
+            <td>${deleteButton}</td>
             `;
         bookList.appendChild(row);
     });
@@ -124,8 +129,8 @@ const refreshBookData = () => {
     const page = urlParams.get('page');
 
     fetch(`${routeUrl}?sort=${sort}&order=${order}&page=${page}`, {
-        method: "GET",
-        headers: {"X-Requested-With": "XMLHttpRequest"}
+        method: 'GET',
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
     .then(response => response.json())
     .then(json => {
@@ -133,12 +138,39 @@ const refreshBookData = () => {
         populateBookRows(data);
         refreshPagination(from, to, total, next_page_url);
     })
-    .catch(error => console.error("Error:", error));
+    .catch(error => console.error('Error when refreshing book data:', error));
 }
 
-
+/**
+ * Handles logic when a book delete button is clicked.
+ *
+ * @param {HTMLButtonElement} button - Button where handler function was called.
+ * @returns {void}
+ */
+const deleteHandler = button => {
+    if (button.innerText === 'Delete') {
+        button.innerText = 'Confirm';
+        setTimeout(() => button.innerText = 'Delete', 2000);
+        return;
+    }
+    const bookId = button.parentElement.parentElement.dataset.bookId;
+    const tableElement = document.getElementById('book-table');
+    if (!tableElement || !bookId) return;
+    const routeUrl = tableElement.dataset.url;
+    const token = tableElement.querySelector('input[name="_token"]').value;
+    fetch(`${routeUrl}/${bookId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': token,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(refreshBookData)
+    .catch(error => console.error('Error when deleting book:', error));
+}
 
 /**
- * Ensure that data is reloaded when the browser back/forward buttons are pressed
+ * Ensure that data is reloaded when the browser back/forward buttons are pressed.
  */
 window.addEventListener("popstate", refreshBookData);

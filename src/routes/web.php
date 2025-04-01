@@ -11,10 +11,11 @@
 |
 */
 
-Route::get('/books', [\App\Http\Controllers\Books\BookController::class, 'index'])
-    ->name('books.index');
-Route::post('/books', [\App\Http\Controllers\Books\BookController::class, 'store'])
-    ->name('books.store');
+use \App\Http\Controllers\Books\BookController;
+
+Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+Route::post('/books', [BookController::class, 'store'])->name('books.store');
+Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/', function () {
     return view('welcome');
 });
