@@ -28,7 +28,7 @@ const buttonHandler = (button) => {
     let value = button.dataset.value;
     if (key === 'page') {
         const page = +urlParams.get('page') || 1;
-        params[key] = value === 'prev' ? max(1, page - 1) : page + 1;
+        params[key] = value === 'prev' ? page - 1 : page + 1;
     } else if (key === 'sort') {
         params = handleSortButton(button, urlParams);
     }
