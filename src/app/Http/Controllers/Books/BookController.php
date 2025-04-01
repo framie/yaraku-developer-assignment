@@ -70,4 +70,39 @@ class BookController extends Controller
 
         return view('books.index', compact('books', 'sortBy', 'order', 'from', 'to'));
     }
+
+    /**
+     * Create and store a new book in the database
+     *
+     * @param  \Illuminate\Http\Request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        // validates the data and will automatically send 422 error response on failure
+        $validatedData = $request->validate([
+            'title' => 'required|unique:books,title|max:255',
+            'author_name' => 'required|string|max:255',
+        ], [
+            'title.unique' => 'A book with this title already exists.',
+            'title.required' => 'The book title is required.',
+            'author_name.required' => 'The book author is required.',
+        ]);
+
+        // create author if not already existing
+        $author = Author::findOrCreateByName($request->input('author_name'));
+        $publishDate = $request->input('publish_date');
+
+        $book = Book::create([
+            'title' => $request->input('title'),
+            'author_id' => $author->id,
+            'published_at' => strtotime($publishDate) ? $publishDate : null
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Book added successfully!',
+            'data' => $book
+        ]);
+    }
 }
