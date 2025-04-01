@@ -23,7 +23,8 @@ class BookController extends Controller
     /**
      * Display all books
      *
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -57,7 +58,16 @@ class BookController extends Controller
         $books = $query->paginate($pageSize);
         $from = ($books->currentPage() - 1) * $pageSize + 1;
         $to = min($from + $pageSize - 1, $books->total());
-            
+
+        // if request is ajax, return JSON response
+        if ($request->ajax()) {
+            return response()->json([
+                'books' => $books,
+                'sortBy' => $sortBy,
+                'order' => $order
+            ]);
+        }
+
         return view('books.index', compact('books', 'sortBy', 'order', 'from', 'to'));
     }
 }

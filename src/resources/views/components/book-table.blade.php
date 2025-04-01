@@ -3,32 +3,35 @@
         <thead>
             <tr>
                 <th>
-                    <a href="{{ route('books.index', [
-                        'order' => $order == 'desc' || $sortBy != 'title' ? 'asc' : 'desc',
-                        'sort_by' => 'title'
-                    ]) }}">
+                    <button
+                        onclick="buttonHandler('sortBy', 'title')"
+                        class="button-sort{{ $sortBy == 'title' ? ' button-sort--active' : '' }}{{ $order == 'desc' ? ' button-sort--desc' : ' button-sort--asc' }}"
+                        data-sort="title"
+                    >
                         Title
-                    </a>
+                    </button>
                 </th>
                 <th>
-                    <a href="{{ route('books.index', [
-                        'order' => $order == 'desc' || $sortBy != 'author_name' ? 'asc' : 'desc',
-                        'sort_by' => 'author_name'
-                    ]) }}">
+                    <button
+                        onclick="buttonHandler('sortBy', 'author_name')"
+                        class="button-sort{{ $sortBy == 'author_name' ? ' button-sort--active' : '' }}{{ $order == 'desc' ? ' button-sort--desc' : ' button-sort--asc' }}"
+                        data-sort="author_name"
+                    >
                         Author Name
-                    </a>
+                    </button>
                 </th>
                 <th>
-                    <a href="{{ route('books.index', [
-                        'order' => $order == 'desc' || $sortBy != 'publish_date' ? 'asc' : 'desc',
-                        'sort_by' => 'publish_date'
-                    ]) }}">
+                    <button
+                        onclick="buttonHandler('sortBy', 'publish_date')"
+                        class="button-sort{{ $sortBy == 'publish_date' ? ' button-sort--active' : '' }}{{ $order == 'desc' ? ' button-sort--desc' : ' button-sort--asc' }}"
+                        data-sort="publish_date"
+                    >
                         Publish Date
-                    </a>
+                    </button>
                 </th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="book-list">
             @foreach ($books as $book)
                 <tr>
                     <td>{{ $book->title }}</td>
@@ -40,17 +43,22 @@
     </table>
 
     <div class="pagination">
-        <a href="{{ $books->previousPageUrl() ?? '#' }}" 
-            class="{{ $books->onFirstPage() ? 'disabled' : '' }}">
+        <button onclick="buttonHandler('page', 'prev')"
+            class="pagination-prev {{ $books->onFirstPage() ? 'disabled' : '' }}">
             Previous
-        </a>
+        </button>
 
-        {{$from}}-{{$to}} / {{$books->total()}}
+        <span class="pagination-from">{{$from}}</span>
+        -
+        <span class="pagination-to">{{$to}}</span>
+        /
+        <span class="pagination-total">{{$books->total()}}</span>
 
-        <a href="{{ $books->nextPageUrl() ?? '#' }}" 
-            class="{{ $books->hasMorePages() ? '' : 'disabled' }}">
+        <button onclick="buttonHandler('page', 'next')"
+            class="pagination-next {{ $books->hasMorePages() ? '' : 'disabled' }}">
             Next
-        </a>
+        </button>
     </div>
-
 </div>
+
+<script src="{{ asset('js/book-table-script.js') }}"></script>
