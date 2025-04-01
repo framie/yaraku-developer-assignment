@@ -24,7 +24,6 @@ const buttonHandler = (key, value) => {
     const urlParams = new URLSearchParams(window.location.search);
     const sortBy = urlParams.get('sortBy');
     const order = urlParams.get('order');
-    const page = urlParams.get('page');
     if (key === 'page') {
         const page = +urlParams.get('page') || 1;
         if (page === 1 && value === 'prev') return;
