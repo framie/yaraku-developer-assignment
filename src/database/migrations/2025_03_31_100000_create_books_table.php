@@ -14,16 +14,16 @@ class CreateBooksTable extends Migration
     public function up()
     {
         Schema::create('books', function (Blueprint $table) {
-            $table->bigIncrements('id'); // primary key in Laravel 6
-            $table->string('title')->unique(); // assume each book title is unique
-            $table->unsignedBigInteger('author_id'); // Laravel 7+ would use foreignId()
-            $table->date('published_at')->nullable(); // nullable makes this field optional
-            $table->timestamps(); // adds created_at and updated_at columns
+            $table->bigIncrements('id'); // Primary key in Laravel 6.
+            $table->string('title')->unique(); // Assume each book title is unique.
+            $table->unsignedBigInteger('author_id'); // Laravel 7+ would use foreignId().
+            $table->date('published_at')->nullable(); // Nullable makes this field optional.
+            $table->timestamps(); // Adds created_at and updated_at columns.
 
-            // define author_id as foreign key
+            // Define author_id as foreign key.
             $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade');
 
-            // add index to the 'title' column as it will be used for filtering
+            // Add index to the 'title' column as it will be used for filtering.
             $table->index('title');
         });
     }

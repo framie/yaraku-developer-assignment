@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // order is important as books rely on authors being created beforehand
+        // Order is important as books rely on authors being created beforehand.
         $this->call([
             AuthorsTableSeeder::class,
             BooksTableSeeder::class
