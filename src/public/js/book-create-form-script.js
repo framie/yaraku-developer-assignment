@@ -1,5 +1,11 @@
 // Contains JS code related to the book-create-form component
 
+/**
+ * Submits the form to create a new book and stores it in the database.
+ * Will also refresh the books table with the newly stored data.
+ *
+ * @returns {null}
+ */
 const submitBookCreateForm = () => {
     const bookForm = document.getElementById("book-create-form");
     const token = bookForm.querySelector('input[name="_token"]').value;
