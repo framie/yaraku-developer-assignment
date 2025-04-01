@@ -29,16 +29,16 @@ class BookController extends Controller
     public function index(Request $request)
     {
         // get the sort parameters
-        $sortBy = $request->input('sort_by');
+        $sort = $request->input('sort');
         $order = $request->input('order');
         $pageSize = 10;
 
-        // mapping of sortBy values to queries
-        $validSortByValues = ['title', 'author_name', 'publish_date'];
+        // mapping of sort values to queries
+        $validSortValues = ['title', 'author_name', 'publish_date'];
         
         // validate request input values
-        if (!in_array($sortBy, $validSortByValues)) {
-            $sortBy = 'title';
+        if (!in_array($sort, $validSortValues)) {
+            $sort = 'title';
         }
         if (!in_array($order, ['asc', 'desc'])) {
             $order = 'asc';
@@ -46,12 +46,15 @@ class BookController extends Controller
 
         // build SQL query based on request params
         $query = Book::query();
-        if ($sortBy == 'author_name') {
+        if ($sort == 'author_name') {
             $query->leftJoin('authors', 'books.author_id', '=', 'authors.id');
             $query->orderBy('authors.name', $order);
         } else {
             $query->with('author');
-            $query->orderBy($sortBy == 'title' ? 'books.title' : 'books.published_at', $order);
+            $query->orderBy($sort == 'title' ? 'books.title' : 'books.published_at', $order);
+            if ($sort == 'publish_date') {
+                $query->whereNotNull('books.published_at');
+            }
         }
 
         // retrieve current page of results
@@ -63,12 +66,12 @@ class BookController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'books' => $books,
-                'sortBy' => $sortBy,
+                'sort' => $sort,
                 'order' => $order
             ]);
         }
 
-        return view('books.index', compact('books', 'sortBy', 'order', 'from', 'to'));
+        return view('books.index', compact('books', 'sort', 'order', 'from', 'to'));
     }
 
     /**

@@ -5,7 +5,7 @@
  *
  * @param {string} key - The search param key.
  * @param {string} value - The search param value.
- * @returns {null}
+ * @returns {void}
  */
 const updateSearchParams = (key, value) => {
     const url = new URL(window.location);
@@ -16,39 +16,39 @@ const updateSearchParams = (key, value) => {
 /**
  * Handles logic to update and refresh data when buttons are clicked.
  *
- * @param {string} key - Search param key associated with the button.
- * @param {string} value - Search param value associated with the button.
- * @returns {null}
+ * @param {HTMLButtonElement} button - Search param key associated with the button.
+ * @returns {void}
  */
-const buttonHandler = (key, value) => {
+const buttonHandler = (button) => {
     const urlParams = new URLSearchParams(window.location.search);
-    const sortBy = urlParams.get('sortBy');
+    const sort = urlParams.get('sort');
     const order = urlParams.get('order');
+    let key = button.dataset.key;
+    let value = button.dataset.value;
+    console.log(key, value)
     if (key === 'page') {
         const page = +urlParams.get('page') || 1;
         if (page === 1 && value === 'prev') return;
         value = value === 'prev' ? page - 1 : page + 1;
-    } else if (key === 'sortBy') {
+    } else if (key === 'sort') {
         const sortButtonClass = 'button-sort';
         const sortButtons = document.querySelectorAll(`.${sortButtonClass}`);
-        if (sortBy === value) {
+        if (sort === value) {
             key = 'order';
             value = order === 'asc' ? 'desc' : 'asc';
-            sortButtons.forEach(button =>
-                button.classList.remove(`${sortButtonClass}--${order}`)
+            sortButtons.forEach(sortButton =>
+                sortButton.classList.remove(`${sortButtonClass}--${order}`)
             );
-            sortButtons.forEach(button =>
-                button.classList.add(`${sortButtonClass}--${value}`)
+            sortButtons.forEach(sortButton =>
+                sortButton.classList.add(`${sortButtonClass}--${value}`)
             );
         } else {
             const activeClass = `${sortButtonClass}--active`;
-            sortButtons.forEach(button => {
-                button.classList.remove(activeClass, `${sortButtonClass}--desc`);
-                button.classList.add(`${sortButtonClass}--asc`);
+            sortButtons.forEach(sortButton => {
+                sortButton.classList.remove(activeClass, `${sortButtonClass}--desc`);
+                sortButton.classList.add(`${sortButtonClass}--asc`);
             });
-            const query = `.${sortButtonClass}[data-sort="${value}"]`;
-            const currentButton = document.querySelector(query);
-            if (currentButton) currentButton.classList.add(activeClass);
+            button.classList.add(activeClass);
         }
     }
     updateSearchParams(key, value);
@@ -60,18 +60,22 @@ const buttonHandler = (key, value) => {
  * Populates the rows in the books table based on provided data.
  *
  * @param {Object[]} books - Array of objects containing book information.
- * @returns {null}
+ * @returns {void}
  */
 const populateBookRows = books => {
     const bookList = document.getElementById("book-list");
     if (!bookList) return;
+    const buttonClass = 'button-book';
     bookList.innerHTML = "";
     books.forEach(book => {
         let row = document.createElement("tr");
         row.innerHTML = `
             <td>${book.title}</td>
             <td>${book.author ? book.author.name : book.name}</td>
-            <td>${book.published_at || ''}</td>`;
+            <td>${book.published_at || ''}</td>
+            <td><button class="${buttonClass} ${buttonClass}--modify">Modify</button></td>
+            <td><button class="${buttonClass} ${buttonClass}--delete">Delete</button></td>
+            `;
         bookList.appendChild(row);
     });
 }
@@ -115,11 +119,11 @@ const refreshBookData = () => {
     if (!tableElement) return;
     const routeUrl = tableElement.dataset.url;
     const urlParams = new URLSearchParams(window.location.search);
-    const sortBy = urlParams.get('sortBy');
+    const sort = urlParams.get('sort');
     const order = urlParams.get('order');
     const page = urlParams.get('page');
 
-    fetch(`${routeUrl}?sort_by=${sortBy}&order=${order}&page=${page}`, {
+    fetch(`${routeUrl}?sort=${sort}&order=${order}&page=${page}`, {
         method: "GET",
         headers: {"X-Requested-With": "XMLHttpRequest"}
     })
@@ -131,6 +135,8 @@ const refreshBookData = () => {
     })
     .catch(error => console.error("Error:", error));
 }
+
+
 
 /**
  * Ensure that data is reloaded when the browser back/forward buttons are pressed

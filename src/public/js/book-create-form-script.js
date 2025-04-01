@@ -4,11 +4,11 @@
  * Submits the form to create a new book and stores it in the database.
  * Will also refresh the books table with the newly stored data.
  *
- * @returns {null}
+ * @returns {boolean} returns false to prevent form from submitting
  */
 const submitBookCreateForm = () => {
     const bookForm = document.getElementById("book-create-form");
-    if (!bookForm) return;
+    if (!bookForm) return false;
     const routeUrl = bookForm.getAttribute('action');
     const token = bookForm.querySelector('input[name="_token"]').value;
     const message = bookForm.querySelector("#book-create-message");
