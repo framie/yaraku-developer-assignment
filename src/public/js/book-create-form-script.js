@@ -1,0 +1,31 @@
+// Contains JS code related to the book-create-form component
+
+const submitBookCreateForm = () => {
+    const bookForm = document.getElementById("book-create-form");
+    const token = bookForm.querySelector('input[name="_token"]').value;
+    const message = bookForm.querySelector("#book-create-message");
+    message.textContent = "";
+
+    fetch("/books", {
+        method: "POST",
+        body: new FormData(bookForm),
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": token
+        }
+    })
+    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+    .then(({ status, body }) => {
+        if (status === 422) {
+            Object.values(body.errors).forEach(error => {
+                message.textContent += `${error} `;
+            })
+        } else {
+            message.textContent = body.message;
+            bookForm.reset();
+        }
+    })
+    .catch(error => console.error("Error when submitting book create form:", error));
+    if (typeof refreshBookData === 'function') setTimeout(() => refreshBookData(), 500);
+    return false;
+}

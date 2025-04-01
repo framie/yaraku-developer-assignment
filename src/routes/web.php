@@ -13,6 +13,8 @@
 
 Route::get('/books', [\App\Http\Controllers\Books\BookController::class, 'index'])
     ->name('books.index');
+Route::post('/books', [\App\Http\Controllers\Books\BookController::class, 'store'])
+    ->name('books.store');
 Route::get('/', function () {
     return view('welcome');
 });
