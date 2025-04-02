@@ -9,6 +9,7 @@
 const updateSearchParams = (params) => {
     const url = new URL(window.location);
     Object.entries(params).forEach(([key, value]) => {
+        if (!value) return url.searchParams.delete(key);
         url.searchParams.set(key, value);
     });
     window.history.pushState({}, '', url);
@@ -31,6 +32,10 @@ const buttonHandler = (button) => {
         params[key] = value === 'prev' ? page - 1 : page + 1;
     } else if (key === 'sort') {
         params = handleSortButton(button, urlParams);
+    } if (key === 'search') {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput && value === 'reset') searchInput.value = '';
+        params['search'] = searchInput?.value;
     }
     updateSearchParams(params);
     refreshBookData();
@@ -136,9 +141,10 @@ const refreshBookData = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const sort = urlParams.get('sort');
     const order = urlParams.get('order');
+    const search = urlParams.get('search') || '';
     const page = urlParams.get('page');
 
-    fetch(`${routeUrl}?sort=${sort}&order=${order}&page=${page}`, {
+    fetch(`${routeUrl}?sort=${sort}&order=${order}&search=${search}&page=${page}`, {
         method: 'GET',
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     })

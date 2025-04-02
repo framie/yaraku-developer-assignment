@@ -1,15 +1,14 @@
 <div id="book-table" data-url="{{ route('books.index') }}">
     @csrf
     <div class="search-container">
-        <span>Search
-        <div class="search-group">
-            <label for="author">Book Title:</label>
-            <input type="text" name="book_title" class="input-text" required>
-        </div>
-        <div class="search-group">
-            <label for="author">Author Name:</label>
-            <input type="text" name="author_name" class="input-text" required>
-        </div>
+        <label for="search">Search:</label>
+        <input
+            id="search-input"
+            type="text"
+            name="search"
+            class="input-text"
+            value="{{ $search }}"
+        >
         <button
             onclick="buttonHandler(this)"
             data-key="search"
@@ -24,7 +23,6 @@
         >
             Reset
         </button>
-
     </div>
     <table>
         <thead>

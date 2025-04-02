@@ -32,13 +32,18 @@ class BookController extends Controller
         // Get the sort parameters.
         $sort = $request->input('sort');
         $order = $request->input('order');
+        $search = $request->input('search');
         $pageSize = 10;
 
         // Mapping of sort values to queries.
-        $validSortValues = ['title', 'author_name', 'publish_date'];
+        $sortMapping = [
+            'title' => 'books.title',
+            'author_name' => 'authors.name',
+            'publish_date' => 'books.published_at'
+        ];
         
-        // Validate request input values
-        if (!in_array($sort, $validSortValues)) {
+        // Validate request input values.
+        if (!in_array($sort, array_keys($sortMapping))) {
             $sort = 'title';
         }
         if (!in_array($order, ['asc', 'desc'])) {
@@ -47,15 +52,25 @@ class BookController extends Controller
 
         // Build SQL query based on request params.
         $query = Book::query();
-        if ($sort == 'author_name') {
+
+        // If sorting or filtering via Author column then must perform a join.
+        if ($sort == 'author_name' || $search) {
             $query->leftJoin('authors', 'books.author_id', '=', 'authors.id');
-            $query->orderBy('authors.name', $order);
         } else {
             $query->with('author');
-            $query->orderBy($sort == 'title' ? 'books.title' : 'books.published_at', $order);
-            if ($sort == 'publish_date') {
-                $query->whereNotNull('books.published_at');
-            }
+        }
+
+        // If search term is included do partial search on Book Title and Author Name.
+        // Ensure that input is sanitized to prevent SQL injection.
+        if ($search) {
+            $query->where($sortMapping['title'], 'LIKE', "%{$search}%")
+                  ->orWhere($sortMapping['author_name'], 'LIKE', "%{$search}%");
+        }
+
+        // Ensure that results are ordered by specified sort column and order.
+        $query->orderBy($sortMapping[$sort], $order);
+        if ($sort == 'publish_date') {
+            $query->whereNotNull('books.published_at');
         }
 
         // Retrieve current page of results.
@@ -68,11 +83,12 @@ class BookController extends Controller
             return response()->json([
                 'books' => $books,
                 'sort' => $sort,
-                'order' => $order
+                'order' => $order,
+                'search' => $search
             ]);
         }
 
-        return view('books.index', compact('books', 'sort', 'order', 'from', 'to'));
+        return view('books.index', compact('books', 'sort', 'order', 'search', 'from', 'to'));
     }
 
     /**
