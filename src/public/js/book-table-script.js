@@ -45,7 +45,6 @@ const buttonHandler = (button) => {
  */
 const handleSortButton = (button, urlParams) => {
     const sortButtonClass = 'button-sort';
-    const sortButtons = document.querySelectorAll(`.${sortButtonClass}`);
     const currentSort = urlParams.get('sort');
     const currentOrder = urlParams.get('order') || 'asc';
     const newSort = button.dataset.value;
@@ -53,20 +52,15 @@ const handleSortButton = (button, urlParams) => {
     // When clicking the current sort column, toggle the sort order.
     if (currentSort === newSort) {
         const newOrder = currentOrder === 'asc' ? 'desc' : 'asc'
-        sortButtons.forEach(sortButton => {
-            sortButton.classList.remove(`${sortButtonClass}--${currentOrder}`);
-            sortButton.classList.add(`${sortButtonClass}--${newOrder}`);
-        });
+        button.classList.remove(`${sortButtonClass}--${currentOrder}`);
+        button.classList.add(`${sortButtonClass}--${newOrder}`);
         return { 'order': newOrder };
 
     // Otherwise, change the sort column without affecting the sort order.
     } else {
         const activeClass = `${sortButtonClass}--active`;
-        sortButtons.forEach(sortButton => {
-            sortButton.classList.remove(activeClass, `${sortButtonClass}--desc`);
-            sortButton.classList.add(`${sortButtonClass}--asc`);
-        });
-        button.classList.add(activeClass);
+        document.querySelector(`.${activeClass}`)?.setAttribute('class', sortButtonClass);
+        button.classList.add(`${sortButtonClass}--active`, `${sortButtonClass}--asc`);
         return { 'sort': newSort, 'order': 'asc' };
     }
 };

@@ -32,7 +32,7 @@
                 <th>
                     <button
                         onclick="buttonHandler(this)"
-                        class="button-sort{{ $sort == 'title' ? ' button-sort--active' : '' }}{{ $order == 'desc' ? ' button-sort--desc' : ' button-sort--asc' }}"
+                        class="button-sort{{ $sort == 'title' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
                         data-key="sort"
                         data-value="title"
                     >
@@ -42,7 +42,7 @@
                 <th>
                     <button
                         onclick="buttonHandler(this)"
-                        class="button-sort{{ $sort == 'author_name' ? ' button-sort--active' : '' }}{{ $order == 'desc' ? ' button-sort--desc' : ' button-sort--asc' }}"
+                        class="button-sort{{ $sort == 'author_name' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
                         data-key="sort"
                         data-value="author_name"
                     >
@@ -52,7 +52,7 @@
                 <th>
                     <button
                         onclick="buttonHandler(this)"
-                        class="button-sort{{ $sort == 'publish_date' ? ' button-sort--active' : '' }}{{ $order == 'desc' ? ' button-sort--desc' : ' button-sort--asc' }}"
+                        class="button-sort{{ $sort == 'publish_date' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
                         data-key="sort"
                         data-value="publish_date"
                     >
