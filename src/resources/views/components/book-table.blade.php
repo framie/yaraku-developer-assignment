@@ -1,36 +1,16 @@
 <div id="book-table" data-url="{{ route('books.index') }}">
     @csrf
-    <div class="search-container">
-        <label for="search">Search:</label>
-        <input
-            id="search-input"
-            type="text"
-            name="search"
-            class="input-text"
-            value="{{ $search }}"
-        >
-        <button
-            onclick="buttonHandler(this)"
-            data-key="search"
-            data-value="submit"
-        >
-            Submit
-        </button>
-        <button
-            onclick="buttonHandler(this)"
-            data-key="search"
-            data-value="reset"
-        >
-            Reset
-        </button>
-    </div>
+
+    @include('components.search', ['items' => $books])
+
     <table>
         <thead>
             <tr>
                 <th>
                     <button
-                        onclick="buttonHandler(this)"
+                        type="button"
                         class="button-sort{{ $sort == 'title' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
+                        onclick="buttonHandler(this)"
                         data-key="sort"
                         data-value="title"
                     >
@@ -39,8 +19,9 @@
                 </th>
                 <th>
                     <button
-                        onclick="buttonHandler(this)"
+                        type="button"
                         class="button-sort{{ $sort == 'author_name' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
+                        onclick="buttonHandler(this)"
                         data-key="sort"
                         data-value="author_name"
                     >
@@ -49,8 +30,9 @@
                 </th>
                 <th>
                     <button
-                        onclick="buttonHandler(this)"
+                        type="button"
                         class="button-sort{{ $sort == 'publish_date' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
+                        onclick="buttonHandler(this)"
                         data-key="sort"
                         data-value="publish_date"
                     >
@@ -61,22 +43,29 @@
         </thead>
         <tbody id="book-list">
             @foreach ($books as $book)
-                <tr class="book-row" data-book-id="{{ $book->id }}">
+                <tr>
                     <td>{{ $book->title }}</td>
                     <td>{{ $book->author->name }}</td>
                     <td>{{ $book->published_at }}</td>
                     <td>
                         <button
-                            onclick="modifyHandler(this)"
+                            type="button"
                             class="button-book--modify"
+                            onclick="modifyHandler(this)"
+                            data-book-id="{{ $book->id }}"
+                            data-title="{{ $book->title }}"
+                            data-author-name="{{ $book->author->name }}"
+                            data-publish-date="{{ $book->published_at }}"
                         >
                             Modify
                         </button>
                     </td>
                     <td>
                         <button
-                            onclick="deleteHandler(this)"
+                            type="button"
                             class="button-book--delete"
+                            onclick="deleteHandler(this)"
+                            data-book-id="{{ $book->id }}"
                         >
                             Delete
                         </button>
@@ -86,31 +75,10 @@
         </tbody>
     </table>
 
-    <div class="pagination">
-        <button
-            onclick="buttonHandler(this)"
-            class="pagination-prev{{ $books->onFirstPage() ? ' disabled' : '' }}"
-            data-key="page"
-            data-value="prev"
-        >
-            Previous
-        </button>
+    @include('components.pagination', ['items' => $books])
 
-        <span class="pagination-from">{{$from}}</span>
-        -
-        <span class="pagination-to">{{$to}}</span>
-        /
-        <span class="pagination-total">{{$books->total()}}</span>
-
-        <button
-            onclick="buttonHandler(this)"
-            class="pagination-next{{ $books->hasMorePages() ? '' : ' disabled' }}"
-            data-key="page"
-            data-value="next"
-        >
-            Next
-        </button>
-    </div>
 </div>
+
+@include('components.book-modal', ['type' => 'modify'])
 
 <script src="{{ asset('js/book-table-script.js') }}"></script>
