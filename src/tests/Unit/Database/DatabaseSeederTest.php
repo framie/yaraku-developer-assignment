@@ -34,6 +34,7 @@ class DatabaseSeederTest extends TestCase
         $this->seed(\BooksTableSeeder::class);
 
         $this->assertEquals(0, Book::count(), "Books table should contain 0 books");
+        $this->assertEquals(0, Author::count(), "Authors table should contain 0 authors");
     }
 
     /**
@@ -47,5 +48,6 @@ class DatabaseSeederTest extends TestCase
         $this->seed(\BooksTableSeeder::class);
 
         $this->assertEquals(20, Book::count(), "Books table should contain 20 books");
+        $this->assertEquals(10, Author::count(), "Authors table should contain 10 authors");
     }
 }

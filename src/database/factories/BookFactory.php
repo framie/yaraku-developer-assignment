@@ -9,7 +9,7 @@ use Faker\Generator as Faker;
 $factory->define(Book::class, function (Faker $faker) {
     return [
         'title' => $faker->unique()->sentence,
-        'author_id' => factory(Author::class)->create(),
+        'author_id' => factory(Author::class),
         'published_at' => $faker->date
     ];
 });
