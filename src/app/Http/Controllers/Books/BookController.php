@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Books;
 
+use SimpleXMLElement;
 use App\Author;
 use App\Book;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class BookController extends Controller
 {
@@ -54,7 +56,7 @@ class BookController extends Controller
         $query = Book::query();
 
         // If sorting or filtering via Author column then must perform a join.
-        if ($sort == 'author_name' || $search) {
+        if ($sort === 'author_name' || $search) {
             $query->select('books.id as book_id', 'books.*', 'authors.name as author_name');
             $query->leftJoin('authors', 'books.author_id', '=', 'authors.id');
         } else {
@@ -70,7 +72,7 @@ class BookController extends Controller
 
         // Ensure that results are ordered by specified sort column and order.
         $query->orderBy($sortMapping[$sort], $order);
-        if ($sort == 'publish_date') {
+        if ($sort === 'publish_date') {
             $query->whereNotNull('books.published_at');
         }
 
@@ -134,7 +136,7 @@ class BookController extends Controller
      * Removes a book from the database.
      *
      * @param  \Illuminate\Http\Request
-     * @param  \App\Book
+     * @param  \App\Book  $book - The book to be removed.
      * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, Book $book)
@@ -159,7 +161,7 @@ class BookController extends Controller
      * Updates an existing book in the database.
      *
      * @param  \Illuminate\Http\Request
-     * @param  \App\Book
+     * @param  \App\Book  $book - The book to be updated.
      * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function update(Request $request, Book $book)
@@ -184,5 +186,106 @@ class BookController extends Controller
         }
 
         return redirect()->route('books.index')->with('message', $message);
+    }
+
+    /**
+     * Exports book or author data in specified format.
+     *
+     * @param  \Illuminate\Http\Request
+     * @param  string  $format - The export format ('csv' or 'xml').
+     * @param  string  $type - The type of data to export ('titles', 'author-names', 'all').
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function export(Request $request, $format, $type)
+    {
+        // Generate data based on $type.
+        if ($type === 'titles') {
+            $books = Book::with('author')->get();
+            $data = $books->pluck('title')
+                ->map(fn($title) => ['Book Title' => $title])
+                ->toArray();
+        } elseif ($type === 'author-names') {
+            $authors = Author::all();
+            $data = $authors->map(fn($author) => [
+                'Author Name' => $author->name
+            ])->toArray();
+        } elseif ($type === 'all') {
+            $books = Book::with('author')->get();
+            $data = $books->map(fn($book) => [
+                'Title'        => $book->title,
+                'Author Name'  => $book->author->name
+            ])->toArray();
+        } else {
+            return abort(400, 'Invalid export type.');
+        }
+
+        // Return output based on $format.
+        if ($format === 'csv') {
+            return $this->exportCsv($data, $type);
+        } elseif ($format === 'xml') {
+            return $this->exportXml($data, $type);
+        }
+        return abort(400, 'Invalid export format.');
+    }
+
+    /**
+     * Generates and streams a CSV file containing the exported data.
+     *
+     * @param  array  $data - The data to export.
+     * @param  string  $type - The type of data ('titles', 'author-names', 'all').
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    private function exportCsv($data, $type)
+    {
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$type}.csv",
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ];
+
+        // Add headers.
+        array_unshift($data, array_keys($data[0]));
+
+        $callback = function () use ($data) {
+            $file = fopen('php://output', 'w');
+            foreach ($data as $row) {
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+
+        // Will not save the file on the server but instead stream directly to user.
+        return Response::stream($callback, 200, $headers);
+    }
+
+    /**
+     * Generates and returns an XML file containing the exported data.
+     *
+     * @param  array  $data - The data to export.
+     * @param  string  $type - The type of data ('titles', 'author-names', 'all').
+     * @return \Illuminate\Http\Response
+     */
+    private function exportXml($data, $type)
+    {
+        $nameMap = [
+            'titles' => 'title',
+            'author-names' => 'author',
+            'all' => 'book'
+        ];
+        $name = $nameMap[$type] ?? 'item';
+        $xml = new SimpleXMLElement("<{$name}s/>");
+
+        foreach ($data as $row) {
+            $item = $xml->addChild($name);
+            foreach ($row as $key => $value) {
+                $item->addChild(str_replace(' ', '', $key), htmlspecialchars($value));
+            }
+        }
+
+        return response($xml->asXML(), 200, [
+            'Content-Type' => 'application/xml',
+            'Content-Disposition' => "attachment; filename={$type}.xml"
+        ]);
     }
 }
