@@ -55,6 +55,7 @@ class BookController extends Controller
 
         // If sorting or filtering via Author column then must perform a join.
         if ($sort == 'author_name' || $search) {
+            $query->select('books.id as book_id', 'books.*', 'authors.name as author_name');
             $query->leftJoin('authors', 'books.author_id', '=', 'authors.id');
         } else {
             $query->with('author');
@@ -103,10 +104,6 @@ class BookController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|unique:books,title|max:255',
             'author_name' => 'required|string|max:255',
-        ], [
-            'title.unique' => 'A book with this title already exists.',
-            'title.required' => 'The book title is required.',
-            'author_name.required' => 'The book author is required.',
         ]);
 
         // Create author if not already existing.
@@ -152,6 +149,37 @@ class BookController extends Controller
             return response()->json([
                 'type' => 'success',
                 'message' => $message
+            ]);
+        }
+
+        return redirect()->route('books.index')->with('message', $message);
+    }
+
+    /**
+     * Updates an existing book in the database.
+     *
+     * @param  \Illuminate\Http\Request
+     * @param  \App\Book
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, Book $book)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author_name' => 'required|string|max:255',
+            'publish_date' => 'nullable|date_format:Y-m-d'
+        ]);
+
+        $book->update($validated);
+
+        $message = 'Book updated successfully.';
+
+        // If request is ajax, return JSON response.
+        if ($request->ajax()) {
+            return response()->json([
+                'type' => 'success',
+                'message' => $message,
+                'data' => $book
             ]);
         }
 

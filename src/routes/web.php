@@ -14,6 +14,7 @@
 use \App\Http\Controllers\Books\BookController;
 
 Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
 Route::post('/books', [BookController::class, 'store'])->name('books.store');
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/', function () {
