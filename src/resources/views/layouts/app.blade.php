@@ -9,5 +9,6 @@
         <main>
             @yield('content')
         </main>
+        <script src="{{ asset('js/helpers.js') }}"></script>
     </body>
 </html>
