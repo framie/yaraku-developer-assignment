@@ -42,15 +42,15 @@ const handleSortButton = (button, urlParams) => {
     // When clicking the current sort column, toggle the sort order.
     if (currentSort === newSort) {
         const newOrder = currentOrder === 'asc' ? 'desc' : 'asc'
-        button.classList.remove(`${sortButtonClass}--${currentOrder}`);
-        button.classList.add(`${sortButtonClass}--${newOrder}`);
+        button.classList.remove(`${ sortButtonClass }--${ currentOrder }`);
+        button.classList.add(`${ sortButtonClass }--${ newOrder }`);
         return { 'order': newOrder };
 
     // Otherwise, change the sort column without affecting the sort order.
     } else {
-        const activeClass = `${sortButtonClass}--active`;
-        document.querySelector(`.${activeClass}`)?.setAttribute('class', sortButtonClass);
-        button.classList.add(`${sortButtonClass}--active`, `${sortButtonClass}--asc`);
+        const activeClass = `${ sortButtonClass }--active`;
+        document.querySelector(`.${ activeClass }`)?.setAttribute('class', sortButtonClass);
+        button.classList.add(`${ sortButtonClass }--active`, `${ sortButtonClass }--asc`);
         return { 'sort': newSort, 'order': 'asc' };
     }
 };
@@ -67,19 +67,22 @@ const populateBookRows = books => {
     const buttonClass = 'button-book';
     bookList.innerHTML = '';
     books.forEach(book => {
+        const authorName = book.author ? book.author.name : book.author_name;
+        const publishDate = book.published_at || '';
         let row = document.createElement('tr');
-        let modifyButton = `<button class="${buttonClass}--modify"`;
-        modifyButton += ` onclick="modifyHandler(this)">Modify</button>`;
-        let deleteButton = `<button class="${buttonClass}--delete"`;
-        deleteButton += ` onclick="deleteHandler(this)">Delete</button>`;
+        let modifyButton = `<button type="button" class="${ buttonClass }--modify" `
+            + `onclick="modifyHandler(this)" data-book-id="${ book.id }" `
+            + `data-title="${ book.title }" data-author-name="${ authorName }" `
+            + `data-publish-date="${ publishDate }">Modify</button>`;
+        let deleteButton = `<button type="button" class="${ buttonClass }--delete" `
+            + `onclick="deleteHandler(this)" data-book-id="${ book.id }">Delete</button>`;
         row.classList.add('book-row');
-        row.setAttribute('data-book-id', book.id);
         row.innerHTML = `
-            <td>${book.title}</td>
-            <td>${book.author ? book.author.name : book.name}</td>
-            <td>${book.published_at || ''}</td>
-            <td>${modifyButton}</td>
-            <td>${deleteButton}</td>
+            <td>${ book.title }</td>
+            <td>${ authorName }</td>
+            <td>${ publishDate }</td>
+            <td>${ modifyButton }</td>
+            <td>${ deleteButton }</td>
             `;
         bookList.appendChild(row);
     });
@@ -87,6 +90,7 @@ const populateBookRows = books => {
 
 /**
  * Fetches and updates the book data from the DB based on the URL query parameters.
+ * Will also refresh the pagination component with new data if necessary.
  *
  * @returns {void}
  */
@@ -99,18 +103,16 @@ const refreshBookData = () => {
     const order = urlParams.get('order');
     const search = urlParams.get('search') || '';
     const page = urlParams.get('page');
+    const path = `${routeUrl}?sort=${sort}&order=${order}&search=${search}&page=${page}`;
 
-    fetch(`${routeUrl}?sort=${sort}&order=${order}&search=${search}&page=${page}`, {
-        method: 'GET',
-        headers: {'X-Requested-With': 'XMLHttpRequest'}
-    })
-    .then(response => response.json())
-    .then(json => {
-        const {data, from, to, total, next_page_url} = json.books;
-        populateBookRows(data);
-        refreshPagination(from, to, total, next_page_url);
-    })
-    .catch(error => console.error('Error when refreshing book data:', error));
+    ajax(path, 'GET')
+        .then(({ _, body }) => {
+            const {data, from, to, total, next_page_url} = body.books;
+            populateBookRows(data);
+            if (typeof refreshPagination !== 'function') return;
+            refreshPagination(from, to, total, next_page_url);
+        })
+        .catch(error => console.error('Error when retrieving books:', error));
 }
 
 /**
@@ -125,22 +127,30 @@ const deleteHandler = button => {
         setTimeout(() => button.innerText = 'Delete', 2000);
         return;
     }
-    const bookId = button.parentElement.parentElement.dataset.bookId;
+    const bookId = button.dataset.bookId;
     const tableElement = document.getElementById('book-table');
-    if (!tableElement || !bookId) return;
+    if (!bookId || !tableElement) return;
     const routeUrl = tableElement.dataset.url;
     const token = tableElement.querySelector('input[name="_token"]').value;
-    fetch(`${routeUrl}/${bookId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': token,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(refreshBookData)
-    .catch(error => console.error('Error when deleting book:', error));
+    const headers = {'Content-Type': 'application/json'};
+    ajax(`${ routeUrl }/${ bookId }`, 'DELETE', token, {}, headers)
+        .then(refreshBookData);
+}
+
+/**
+ * Handles logic when a book modify button is clicked.
+ *
+ * @param {HTMLButtonElement} button - Button where handler function was called.
+ * @returns {void}
+ */
+const modifyHandler = button => {
+    const bookId = button.dataset.bookId;
+    const title = button.dataset.title;
+    const authorName = button.dataset.authorName;
+    const publishDate = button.dataset.publishDate;
+    if (typeof populateBookModifyModal !== 'function') return;
+    populateBookModifyModal(bookId, title, authorName, publishDate);
 }
 
 // Ensure that data is reloaded when the browser back/forward buttons are pressed.
-window.addEventListener("popstate", refreshBookData);
+window.addEventListener('popstate', refreshBookData);
