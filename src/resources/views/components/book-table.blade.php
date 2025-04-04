@@ -1,7 +1,7 @@
 <div id="book-table" class="book-table" data-url="{{ route('books.index') }}">
     @csrf
 
-    <div class="book-table-container">
+    <div class="book-table__container">
 
         <div class="menu-container">
             @include('components.book-menu')
