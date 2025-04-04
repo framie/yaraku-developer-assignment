@@ -70,7 +70,6 @@ const handleSortButton = (button, urlParams) => {
 const populateBookRows = books => {
     const bookList = document.getElementById('book-list');
     if (!bookList) return;
-    const buttonClass = 'button-book';
     bookList.innerHTML = '';
     if (books.length === 0) {
         bookList.innerHTML = `
@@ -89,11 +88,11 @@ const populateBookRows = books => {
         const cellClassName = 'book-table__cell';
         let row = document.createElement('tr');
         row.classList.add('book-table__row');
-        let modifyButton = `<button type="button" class="button ${ buttonClass }-modify" `
+        let modifyButton = `<button type="button" class="button button--modify" `
             + `onclick="modifyHandler(this)" data-book-id="${ book.id }" `
             + `data-title="${ book.title }" data-author-name="${ authorName }" `
             + `data-publish-date="${ publishDate }">Modify</button>`;
-        let deleteButton = `<button type="button" class="button ${ buttonClass }-delete" `
+        let deleteButton = `<button type="button" class="button button--delete" `
             + `onclick="deleteHandler(this)" data-book-id="${ book.id }">Delete</button>`;
         row.classList.add('book-row');
         row.innerHTML = `
