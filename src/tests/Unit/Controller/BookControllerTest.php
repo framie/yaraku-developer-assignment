@@ -196,6 +196,20 @@ class BookControllerTest extends TestCase
     }
 
     /**
+     * Bad request response when attempting to export with no data.
+     *
+     * @return void
+     */
+    public function testBadRequestResponseWhenExportingWithNoData()
+    {
+        $response = $this->get(route('books.export', [
+            'format' => 'csv', 'type' => 'titles'
+        ]));
+
+        $response->assertStatus(400);
+    }
+
+    /**
      * Bad request response when attempting to export using invalid format.
      *
      * @return void
