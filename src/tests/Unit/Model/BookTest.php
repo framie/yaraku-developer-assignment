@@ -13,7 +13,7 @@ class BookTest extends TestCase
     use RefreshDatabase;
     
     /**
-     * Test book creation and author relationship.
+     * Book is created is related to a single author.
      *
      * @return void
      */
@@ -33,7 +33,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test book title is required.
+     * Book title is required for creation.
      *
      * @return void
      */
@@ -45,7 +45,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test book author_id is required.
+     * Book author_id field is required for creation.
      *
      * @return void
      */
@@ -57,7 +57,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test book author_id must be valid.
+     * Book author_id must map to an existing author.
      *
      * @return void
      */
@@ -70,7 +70,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test book published date is optional.
+     * Book published date is optional for creation.
      *
      * @return void
      */
@@ -85,7 +85,7 @@ class BookTest extends TestCase
     }
     
     /**
-     * Test duplicate book title cannot be used.
+     * Duplicate book title cannot be used.
      *
      * @return void
      */

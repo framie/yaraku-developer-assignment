@@ -13,7 +13,7 @@ class DatabaseSeederTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Test authors seeder for successful data insertion.
+     * Authors seeder inserts data.
      *
      * @return void
      */
@@ -25,11 +25,11 @@ class DatabaseSeederTest extends TestCase
     }
 
     /**
-     * Test books seeder does not insert data if authors are not seeded first.
+     * Books seeder does not insert data if authors are not seeded first.
      *
      * @return void
      */
-    public function testBooksSeederDoesntInsertWithoutAuthors()
+    public function testBooksSeederDoesNotInsertWithoutAuthors()
     {
         $this->seed(\BooksTableSeeder::class);
 
@@ -38,7 +38,7 @@ class DatabaseSeederTest extends TestCase
     }
 
     /**
-     * Test books seeder properly inserts data if authors are seeded first.
+     * Books seeder inserts data if authors are seeded first.
      *
      * @return void
      */

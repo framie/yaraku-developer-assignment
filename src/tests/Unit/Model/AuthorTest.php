@@ -13,11 +13,11 @@ class AuthorTest extends TestCase
     use RefreshDatabase;
     
     /**
-     * Test author creation.
+     * Author can be created.
      *
      * @return void
      */
-    public function testAuthorCreation()
+    public function testAuthorCanBeCreated()
     {
         $author = factory(Author::class)->create(['name' => 'Isaka Kotaro']);
 
@@ -26,11 +26,11 @@ class AuthorTest extends TestCase
     }
     
     /**
-     * Test author name is required.
+     * Author name is required for creation.
      *
      * @return void
      */
-    public function testAuthorNameIsRequired()
+    public function testAuthorNameRequiredForCreation()
     {
         $this->expectException(QueryException::class);
 
@@ -38,7 +38,7 @@ class AuthorTest extends TestCase
     }
     
     /**
-     * Test duplicate author name cannot be used.
+     * Duplicate author name cannot be used.
      *
      * @return void
      */
@@ -53,11 +53,11 @@ class AuthorTest extends TestCase
     }
     
     /**
-     * Test author and book relationship.
+     * Author and book have a one-to-many relationship.
      *
      * @return void
      */
-    public function testAuthorAndBookRelationship()
+    public function testAuthorHasARelationshipWithBooks()
     {
         $author = factory(Author::class)->create();
 
@@ -73,7 +73,7 @@ class AuthorTest extends TestCase
     }
     
     /**
-     * Test creates an author if not found.
+     * Creates an author if not found when using findOrCreateByName().
      *
      * @return void
      */
@@ -88,7 +88,7 @@ class AuthorTest extends TestCase
     }
     
     /**
-     * Test does not create author if already existing.
+     * Does not create author if already existing when using findOrCreateByName().
      *
      * @return void
      */

@@ -11,7 +11,7 @@ class DatabaseMigrationTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Test authors table for expected schema.
+     * Authors table has the expected schema.
      *
      * @return void
      */
@@ -28,7 +28,7 @@ class DatabaseMigrationTest extends TestCase
     }
 
     /**
-     * Test books table for expected schema.
+     * Books table has the expected schema.
      *
      * @return void
      */
