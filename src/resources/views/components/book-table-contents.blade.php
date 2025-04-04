@@ -34,41 +34,51 @@
                     Publish Date
                 </button>
             </th>
-            <th class="book-table__header"/>
-            <th class="book-table__header"/>
-        </tr class="book-table__row">
+            <th class="book-table__header">&nbsp;</th>
+            <th class="book-table__header">&nbsp;</th>
+        </tr>
     </thead>
     <tbody id="book-list">
-        @foreach ($books as $book)
+        @if(count($books) > 0)
+            @foreach ($books as $book)
+                <tr class="book-table__row">
+                    <td class="book-table__cell">{{ $book->title }}</td>
+                    <td class="book-table__cell">{{ $book->author->name }}</td>
+                    <td class="book-table__cell">{{ $book->published_at }}</td>
+                    <td class="book-table__cell">
+                        <button
+                            type="button"
+                            class="button button--modify"
+                            onclick="modifyHandler(this)"
+                            data-book-id="{{ $book->id }}"
+                            data-title="{{ $book->title }}"
+                            data-author-name="{{ $book->author->name }}"
+                            data-publish-date="{{ $book->published_at }}"
+                        >
+                            Modify
+                        </button>
+                    </td>
+                    <td class="book-table__cell">
+                        <button
+                            type="button"
+                            class="button button--delete"
+                            onclick="deleteHandler(this)"
+                            data-book-id="{{ $book->id }}"
+                        >
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            @endforeach
+        @else
             <tr class="book-table__row">
-                <td class="book-table__cell">{{ $book->title }}</td>
-                <td class="book-table__cell">{{ $book->author->name }}</td>
-                <td class="book-table__cell">{{ $book->published_at }}</td>
-                <td class="book-table__cell">
-                    <button
-                        type="button"
-                        class="button button--modify"
-                        onclick="modifyHandler(this)"
-                        data-book-id="{{ $book->id }}"
-                        data-title="{{ $book->title }}"
-                        data-author-name="{{ $book->author->name }}"
-                        data-publish-date="{{ $book->published_at }}"
-                    >
-                        Modify
-                    </button>
-                </td>
-                <td class="book-table__cell">
-                    <button
-                        type="button"
-                        class="button button--delete"
-                        onclick="deleteHandler(this)"
-                        data-book-id="{{ $book->id }}"
-                    >
-                        Delete
-                    </button>
-                </td>
-            </tr class="book-table__row">
-        @endforeach
+                <td class="book-table__cell">No results found</td>
+                <td class="book-table__cell">&nbsp;</td>
+                <td class="book-table__cell">&nbsp;</td>
+                <td class="book-table__cell">&nbsp;</td>
+                <td class="book-table__cell">&nbsp;</td>
+            </tr>
+        @endif
     </tbody>
 </table>
 

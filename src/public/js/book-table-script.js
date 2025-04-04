@@ -71,6 +71,17 @@ const populateBookRows = books => {
     if (!bookList) return;
     const buttonClass = 'button-book';
     bookList.innerHTML = '';
+    if (books.length === 0) {
+        bookList.innerHTML = `
+            <tr class="book-table__row">
+                <td class="book-table__cell">No results found</td>
+                <td class="book-table__cell">&nbsp;</td>
+                <td class="book-table__cell">&nbsp;</td>
+                <td class="book-table__cell">&nbsp;</td>
+                <td class="book-table__cell">&nbsp;</td>
+            </tr>`;
+        return;
+    }
     books.forEach(book => {
         const authorName = book.author ? book.author.name : book.author_name;
         const publishDate = book.published_at || '';
