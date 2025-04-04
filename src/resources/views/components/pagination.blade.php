@@ -26,3 +26,7 @@
 </div>
 
 <script src="{{ asset('js/pagination-script.js') }}"></script>
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/pagination.css') }}">
+@endpush
