@@ -3,7 +3,10 @@
 /**
  * Populates the book modify modal with the specified data.
  *
- * @param {HTMLButtonElement} button - Button where handler function was called.
+ * @param {string} bookId - The unique identifier for the book to be modified.
+ * @param {string} title - The title of the book to be displayed in the modal.
+ * @param {string} authorName - The author of the book to be displayed in the modal.
+ * @param {string} publishDate - The publish date of the book (optional).
  * @returns {void}
  */
 const populateBookModifyModal = (bookId, title, authorName, publishDate = '') => {

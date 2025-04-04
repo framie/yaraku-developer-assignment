@@ -53,6 +53,12 @@ const ajax = async (path, method, token, body = {}, headers = {}) => {
     return { status: response.status, body: data };
 };
 
+/**
+ * Opens the modal with the specified ID and clears any existing message.
+ *
+ * @param {string} id - The ID of the modal to be opened.
+ * @returns {void}
+ */
 const openModal = (id) => {
     const modalElement = document.getElementById(id);
     if (modalElement) modalElement.classList.remove('fade');
@@ -60,7 +66,14 @@ const openModal = (id) => {
     if (messageElement) messageElement.innerText = '';
 }
 
-const closeModal = (id, event = null) => {
+/**
+ * Closes the modal with the specified ID.
+ *
+ * @param {string} id - The ID of the modal to be closed.
+ * @param {Event|null} event - The click event triggered by the button.
+ * @returns {void}
+ */
+const closeModal = (id, event = undefined) => {
     // Ensure that the element being clicked is the target of the handler.
     // This is needed for closing the modal when clicking the background.
     if (event && event.target !== event.currentTarget) return;
@@ -69,9 +82,12 @@ const closeModal = (id, event = null) => {
 }
 
 /**
- * Helper function to submits a form by sending AJAX request via specified method.
+ * Submits the form data to the specified URL via an AJAX request and handles the response.
+ * Displays any validation errors or success messages within the form.
  *
- * @returns {void}
+ * @param {HTMLFormElement} formElement - The form element to be submitted.
+ * @param {string} url - The URL to which the form data will be sent.
+ * @returns {Promise<boolean>} - A promise that resolves to true on successful submission.
  */
 const submitForm = (formElement, url) => {
     const token = formElement.querySelector('input[name="_token"]').value;
@@ -99,6 +115,12 @@ const submitForm = (formElement, url) => {
         .catch(error => console.error('Error when submitting form:', error));
 }
 
+/**
+ * Toggles the loading state of the page.
+ *
+ * @param {boolean} state - When true will set the loading state, otherwise remove it.
+ * @returns {void}
+ */
 const setLoadingState = (state) => {
     const bodyElement = document.querySelector('body');
     if (state) bodyElement.classList.add('is-loading');

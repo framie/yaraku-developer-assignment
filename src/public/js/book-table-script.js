@@ -99,6 +99,7 @@ const populateBookRows = books => {
  * Fetches and updates the book data from the DB based on the URL query parameters.
  * Will also refresh the pagination component with new data if necessary.
  *
+ * @param {boolean} setLoading - When set to true will properly set the loading state.
  * @returns {void}
  */
 const refreshBookData = (setLoading = true) => {
