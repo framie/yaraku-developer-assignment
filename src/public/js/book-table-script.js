@@ -54,9 +54,10 @@ const handleSortButton = (button, urlParams) => {
     // Otherwise, change the sort column without affecting the sort order.
     } else {
         const activeClass = `${ sortButtonClass }--active`;
+        const newOrder = !currentSort && newSort === 'title' ? 'desc' : 'asc';
         document.querySelector(`.${ activeClass }`)?.setAttribute('class', sortButtonClass);
-        button.classList.add(`${ sortButtonClass }--active`, `${ sortButtonClass }--asc`);
-        return { 'sort': newSort, 'order': 'asc' };
+        button.classList.add(`${ sortButtonClass }--active`, `${ sortButtonClass }--newOrder`);
+        return { 'sort': newSort, 'order': newOrder };
     }
 };
 
