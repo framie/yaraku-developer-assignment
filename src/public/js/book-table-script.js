@@ -12,6 +12,7 @@ const buttonHandler = (button) => {
     let params = {};
     let key = button.dataset.key;
     let value = button.dataset.value;
+    // Ensure proper functionality based on type (key) of button.
     if (key === 'page') {
         const page = +urlParams.get('page') || 1;
         params[key] = value === 'prev' ? page - 1 : page + 1;
@@ -19,9 +20,13 @@ const buttonHandler = (button) => {
         params = handleSortButton(button, urlParams);
     } if (key === 'search') {
         const searchInput = document.getElementById('search-input');
+        const searchParam = urlParams.get('search');
+        if (!searchParam && !searchInput?.value) return;
         if (searchInput && value === 'reset') searchInput.value = '';
-        params['search'] = searchInput?.value;
+        params['search'] = searchInput?.value || '';
+        params['page'] = 1;
     }
+    // Update page search params and content within book table based on button function.
     updateSearchParams(params);
     refreshBookData();
 }
@@ -34,7 +39,7 @@ const buttonHandler = (button) => {
  * @returns {Object} - An object containing key-value pairs to update in the URL.
  */
 const handleSortButton = (button, urlParams) => {
-    const sortButtonClass = 'button-sort';
+    const sortButtonClass = 'button--sort';
     const currentSort = urlParams.get('sort');
     const currentOrder = urlParams.get('order') || 'asc';
     const newSort = button.dataset.value;
@@ -69,20 +74,22 @@ const populateBookRows = books => {
     books.forEach(book => {
         const authorName = book.author ? book.author.name : book.author_name;
         const publishDate = book.published_at || '';
+        const cellClassName = 'book-table__cell';
         let row = document.createElement('tr');
-        let modifyButton = `<button type="button" class="${ buttonClass }--modify" `
+        row.classList.add('book-table__row');
+        let modifyButton = `<button type="button" class="button ${ buttonClass }-modify" `
             + `onclick="modifyHandler(this)" data-book-id="${ book.id }" `
             + `data-title="${ book.title }" data-author-name="${ authorName }" `
             + `data-publish-date="${ publishDate }">Modify</button>`;
-        let deleteButton = `<button type="button" class="${ buttonClass }--delete" `
+        let deleteButton = `<button type="button" class="button ${ buttonClass }-delete" `
             + `onclick="deleteHandler(this)" data-book-id="${ book.id }">Delete</button>`;
         row.classList.add('book-row');
         row.innerHTML = `
-            <td>${ book.title }</td>
-            <td>${ authorName }</td>
-            <td>${ publishDate }</td>
-            <td>${ modifyButton }</td>
-            <td>${ deleteButton }</td>
+            <td class="${ cellClassName }">${ book.title }</td>
+            <td class="${ cellClassName }">${ authorName }</td>
+            <td class="${ cellClassName }">${ publishDate }</td>
+            <td class="${ cellClassName }">${ modifyButton }</td>
+            <td class="${ cellClassName }">${ deleteButton }</td>
             `;
         bookList.appendChild(row);
     });
@@ -94,23 +101,28 @@ const populateBookRows = books => {
  *
  * @returns {void}
  */
-const refreshBookData = () => {
+const refreshBookData = (setLoading = true) => {
     const tableElement = document.getElementById('book-table');
     if (!tableElement) return;
-    const routeUrl = tableElement.dataset.url;
+    if (setLoading) setLoadingState(true);
+    const url = tableElement.dataset.url;
     const urlParams = new URLSearchParams(window.location.search);
     const sort = urlParams.get('sort');
     const order = urlParams.get('order');
     const search = urlParams.get('search') || '';
     const page = urlParams.get('page');
-    const path = `${routeUrl}?sort=${sort}&order=${order}&search=${search}&page=${page}`;
+    const path = `${url}?sort=${sort}&order=${order}&search=${search}&page=${page}`;
 
     ajax(path, 'GET')
         .then(({ _, body }) => {
-            const {data, from, to, total, next_page_url} = body.books;
+            setLoadingState(false);
+            // Re-populate the rows in the table with data from AJAX response.
+            const {data, current_page, last_page, next_page_url} = body.books;
             populateBookRows(data);
+
+            // If component is included, also update pagination.
             if (typeof refreshPagination !== 'function') return;
-            refreshPagination(from, to, total, next_page_url);
+            refreshPagination(current_page, last_page, next_page_url);
         })
         .catch(error => console.error('Error when retrieving books:', error));
 }
@@ -122,18 +134,22 @@ const refreshBookData = () => {
  * @returns {void}
  */
 const deleteHandler = button => {
+    // First, change text to "Confirm" to help ensure no accidental deletion.
     if (button.innerText === 'Delete') {
         button.innerText = 'Confirm';
         setTimeout(() => button.innerText = 'Delete', 2000);
         return;
     }
+
+    // If already previously clicked within 2 seconds, proceed with deletion.
     const bookId = button.dataset.bookId;
     const tableElement = document.getElementById('book-table');
     if (!bookId || !tableElement) return;
-    const routeUrl = tableElement.dataset.url;
+    setLoadingState(true);
+    const url = tableElement.dataset.url;
     const token = tableElement.querySelector('input[name="_token"]').value;
     const headers = {'Content-Type': 'application/json'};
-    ajax(`${ routeUrl }/${ bookId }`, 'DELETE', token, {}, headers)
+    ajax(`${ url }/${ bookId }`, 'DELETE', token, {}, headers)
         .then(refreshBookData);
 }
 
@@ -144,11 +160,13 @@ const deleteHandler = button => {
  * @returns {void}
  */
 const modifyHandler = button => {
+    // Only proceed if the modify book modal is properly included on the page.
+    if (typeof populateBookModifyModal !== 'function') return;
     const bookId = button.dataset.bookId;
     const title = button.dataset.title;
     const authorName = button.dataset.authorName;
     const publishDate = button.dataset.publishDate;
-    if (typeof populateBookModifyModal !== 'function') return;
+    openModal('book-modify-modal');
     populateBookModifyModal(bookId, title, authorName, publishDate);
 }
 
