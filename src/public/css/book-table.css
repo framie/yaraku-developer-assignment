@@ -1,0 +1,159 @@
+/* Book Table Component Styles */
+
+.panel {
+    display: table;
+    background: #ffffff;
+    padding: 8px 16px;
+    border-radius: 16px;
+    box-shadow: 3px 3px 1px 1px #7474746e;
+
+    &.panel__pagination {
+        margin: 0 auto;
+    }
+}
+
+.menu {
+    display: flex;
+    margin-bottom: 12px;
+}
+
+.menu__left .button:nth-child(n + 2) {
+    margin-left: 8px;
+}
+
+.menu__right {
+    margin-left: auto;
+}
+
+.book-table {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.book-table__container {
+    width: 100%;
+    min-width: 650px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.book-table__table {
+    width: 100%;
+    margin-bottom: 16px;
+    border-spacing: 0;
+    border-radius: 12px;
+    box-shadow: 3px 3px 1px 1px #7474746e;
+}
+
+.button--sort {
+    position: relative;
+    width: 100%;
+    padding: 8px 0;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+        color: #d4dfff;
+    }
+
+    &::after {
+        content: "^";
+        position: absolute;
+        top: 8px;
+        margin-left: 4px;
+        font-size: 22px;
+        display: none;
+    }
+
+    &.button--sort--active::after {
+        display: inline;
+    }
+
+    &.button--sort--asc::after {
+        top: -1px;
+        transform: rotate(180deg);
+    }
+}
+
+.book-table__header {
+    background: #3d3d3d;
+
+    &:first-child {
+        border-radius: 12px 0 0 0;
+    }
+
+    &:last-child {
+        border-radius: 0 12px 0 0;
+    }
+}
+
+.book-table__row {
+    background: #ffffff;
+
+    &:hover {
+        background: #ebeeff;
+    }
+
+    &:nth-child(2n) {
+        background: #e5e5e5;
+    }
+
+    &:last-child > .book-table__cell:first-child {
+        border-radius: 0 0 0 12px;
+    }
+
+    &:last-child > .book-table__cell:last-child {
+        border-radius: 0 0 12px 0;
+    }
+}
+
+.book-table__cell {
+    padding: 8px;
+
+    &:first-child {
+        padding-left: 16px;
+    }
+
+    &:nth-child(3) {
+        width: 98px;
+    }
+
+    &:nth-child(4),
+    &:nth-child(5) {
+        width: 0px;
+    }
+
+    &:last-child {
+        padding-right: 16px;
+    }
+}
+
+.button--modify,
+.button--delete {
+    width: 76px;
+    padding: 4px 16px;
+    border: none;
+    font-size: 13px;
+}
+
+.button--modify {
+    background: #f7ecbc;
+    color: #5e5b45;
+
+    &:hover {
+        background: #f1c677;
+    }
+}
+
+.button--delete {
+    background: #f3d3d9;
+    color: #773b46;
+
+    &:hover {
+        background: #f79090;
+    }
+}
