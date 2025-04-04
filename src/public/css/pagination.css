@@ -1,0 +1,29 @@
+/* Pagination Component Styles */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination__prev {
+    margin-left: 0;
+}
+
+.pagination__next {
+    margin-left: 12px;
+}
+
+.pagination__prev.disabled,
+.pagination__next.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.pagination__text {
+    margin-left: 4px;
+    
+    &:nth-child(2) {
+        margin-left: 12px;
+    }
+}
