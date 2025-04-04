@@ -43,6 +43,9 @@
                     Export Data
                 </button>
             </div>
+            <div class="modal__form-group">
+                <span class="message"></span>
+            </div>
         </form>
     </div>
 </div>

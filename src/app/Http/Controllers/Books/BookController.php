@@ -242,7 +242,12 @@ class BookController extends Controller
                 'Author Name'  => $book->author->name
             ])->toArray();
         } else {
-            return abort(400, 'Invalid export type.');
+            return response()->json(['errors' => ['Invalid export type.']], 400);
+        }
+
+        // Return a Bad Request response if there is no data.
+        if (empty($data)) {
+            return response()->json(['errors' => ['No data available for export.']], 400);
         }
 
         // Return output based on $format.
@@ -251,7 +256,7 @@ class BookController extends Controller
         } elseif ($format === 'xml') {
             return $this->exportXml($data, $type);
         }
-        return abort(400, 'Invalid export format.');
+        return response()->json(['errors' => ['Invalid export format.']], 400);
     }
 
     /**
