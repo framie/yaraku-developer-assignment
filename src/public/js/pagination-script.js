@@ -11,12 +11,12 @@
 const refreshPagination = (currentPage, lastPage, nextPageUrl = None) => {
     updateElementText('.pagination-current-page', currentPage);
     updateElementText('.pagination-last-page', lastPage);
-    const prevPageElement = document.querySelector('.pagination-prev');
+    const prevPageElement = document.querySelector('.pagination__prev');
     if (prevPageElement) {
         if (currentPage > 1) prevPageElement.classList.remove('disabled');
         else prevPageElement.classList.add('disabled');
     }
-    const nextPageElement = document.querySelector('.pagination-next');
+    const nextPageElement = document.querySelector('.pagination__next');
     if (nextPageElement) {
         if (nextPageUrl) nextPageElement.classList.remove('disabled');
         else nextPageElement.classList.add('disabled');
