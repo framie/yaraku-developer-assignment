@@ -78,8 +78,8 @@ class BookController extends Controller
 
         // Retrieve current page of results.
         $books = $query->paginate($pageSize);
-        $from = ($books->currentPage() - 1) * $pageSize + 1;
-        $to = min($from + $pageSize - 1, $books->total());
+        $currentPage = $books->currentPage();
+        $lastPage = $books->lastPage();
 
         // If request is ajax, return JSON response.
         if ($request->ajax()) {
@@ -91,7 +91,9 @@ class BookController extends Controller
             ]);
         }
 
-        return view('books.index', compact('books', 'sort', 'order', 'search', 'from', 'to'));
+        return view('books.index', compact(
+            'books', 'sort', 'order', 'search', 'currentPage', 'lastPage'
+        ));
     }
 
     /**
