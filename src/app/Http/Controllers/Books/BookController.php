@@ -193,7 +193,7 @@ class BookController extends Controller
      *
      * @param  \Illuminate\Http\Request
      * @param  string  $format - The export format ('csv' or 'xml').
-     * @param  string  $type - The type of data to export ('titles', 'author-names', 'all').
+     * @param  string  $type - The type of data to export ('titles', 'authors', 'all').
      * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function export(Request $request, $format, $type)
@@ -204,10 +204,10 @@ class BookController extends Controller
             $data = $books->pluck('title')
                 ->map(fn($title) => ['Book Title' => $title])
                 ->toArray();
-        } elseif ($type === 'author-names') {
+        } elseif ($type === 'authors') {
             $authors = Author::all();
             $data = $authors->map(fn($author) => [
-                'Author Name' => $author->name
+                'Name' => $author->name
             ])->toArray();
         } elseif ($type === 'all') {
             $books = Book::with('author')->get();
@@ -232,7 +232,7 @@ class BookController extends Controller
      * Generates and streams a CSV file containing the exported data.
      *
      * @param  array  $data - The data to export.
-     * @param  string  $type - The type of data ('titles', 'author-names', 'all').
+     * @param  string  $type - The type of data ('titles', 'authors', 'all').
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     private function exportCsv($data, $type)
@@ -263,17 +263,17 @@ class BookController extends Controller
      * Generates and returns an XML file containing the exported data.
      *
      * @param  array  $data - The data to export.
-     * @param  string  $type - The type of data ('titles', 'author-names', 'all').
+     * @param  string  $type - The type of data ('titles', 'authors', 'all').
      * @return \Illuminate\Http\Response
      */
     private function exportXml($data, $type)
     {
         $nameMap = [
-            'titles' => 'title',
-            'author-names' => 'author',
-            'all' => 'book'
+            'titles' => 'Title',
+            'authors' => 'Author',
+            'all' => 'Book'
         ];
-        $name = $nameMap[$type] ?? 'item';
+        $name = $nameMap[$type] ?? 'Item';
         $xml = new SimpleXMLElement("<{$name}s/>");
 
         foreach ($data as $row) {

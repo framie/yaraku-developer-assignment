@@ -1,6 +1,8 @@
 <div id="book-table" data-url="{{ route('books.index') }}">
     @csrf
 
+    @include('components.book-export')
+
     @include('components.search', ['items' => $books])
 
     <table>
@@ -9,18 +11,18 @@
                 <th>
                     <button
                         type="button"
-                        class="button-sort{{ $sort == 'title' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
+                        class="button-sort{{ $sort === 'title' ? ' button-sort--active' . ($order === 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
                         onclick="buttonHandler(this)"
                         data-key="sort"
                         data-value="title"
                     >
-                        Title
+                        Book Title
                     </button>
                 </th>
                 <th>
                     <button
                         type="button"
-                        class="button-sort{{ $sort == 'author_name' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
+                        class="button-sort{{ $sort === 'author_name' ? ' button-sort--active' . ($order === 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
                         onclick="buttonHandler(this)"
                         data-key="sort"
                         data-value="author_name"
@@ -31,7 +33,7 @@
                 <th>
                     <button
                         type="button"
-                        class="button-sort{{ $sort == 'publish_date' ? ' button-sort--active' . ($order == 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
+                        class="button-sort{{ $sort === 'publish_date' ? ' button-sort--active' . ($order === 'desc' ? ' button-sort--desc' : ' button-sort--asc') : '' }}"
                         onclick="buttonHandler(this)"
                         data-key="sort"
                         data-value="publish_date"
@@ -39,6 +41,8 @@
                         Publish Date
                     </button>
                 </th>
+                <th/>
+                <th/>
             </tr>
         </thead>
         <tbody id="book-list">
