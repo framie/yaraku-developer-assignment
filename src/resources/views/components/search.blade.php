@@ -1,5 +1,5 @@
 <div class="search-container">
-    <label for="search">Search:</label>
+    <label for="search-input">Search:</label>
     <input
         id="search-input"
         type="text"
@@ -9,6 +9,7 @@
     >
     <button
         type="button"
+        class="button"
         onclick="buttonHandler(this)"
         data-key="search"
         data-value="submit"
@@ -17,6 +18,7 @@
     </button>
     <button
         type="button"
+        class="button"
         onclick="buttonHandler(this)"
         data-key="search"
         data-value="reset"
