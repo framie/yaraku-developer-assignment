@@ -7,9 +7,13 @@
  * @returns {void}
  */
 const submitBookCreateForm = () => {
-    const form = document.getElementById('book-create-form');
-    const url = form.getAttribute('action');
-    submitForm(form, url).then(() => {
-        typeof refreshBookData === 'function' && refreshBookData();
+    setLoadingState(true);
+    const formElement = document.getElementById('book-create-form');
+    const url = formElement.getAttribute('action');
+    submitForm(formElement, url).then(success => {
+        setLoadingState(false);
+        if (!success) return;
+        formElement.reset();
+        typeof refreshBookData === 'function' && refreshBookData(false);
     });
 }

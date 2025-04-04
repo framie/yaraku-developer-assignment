@@ -7,9 +7,10 @@
  * @returns {void}
  */
 const exportHandler = () => {
-    const form = document.getElementById('book-export-form');
-    const data = new FormData(form);
+    const formElement = document.getElementById('book-export-form');
+    const data = new FormData(formElement);
     const format = data.get('format');
     const type = data.get('type');
-    window.location.href = `${ form.getAttribute('action') }/export/${ format }/${ type }`;
+    const url = `${ formElement.getAttribute('action') }/export/${ format }/${ type }`;
+    window.location.href = url;
 }

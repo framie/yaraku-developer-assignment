@@ -11,6 +11,8 @@ const populateBookModifyModal = (bookId, title, authorName, publishDate = '') =>
     document.getElementById('book-modify-title').value = title;
     document.getElementById('book-modify-author-name').value = authorName;
     document.getElementById('book-modify-publish-date').value = publishDate;
+    const messageElement = document.querySelector('#book-modify-modal .message');
+    if (messageElement) messageElement.innerText = '';
 }
 
 /**
@@ -20,10 +22,11 @@ const populateBookModifyModal = (bookId, title, authorName, publishDate = '') =>
  * @returns {void}
  */
 const submitBookModifyForm = () => {
-    const form = document.getElementById('book-modify-form');
-    const bookId = form.querySelector('#book-modify-id').value;
-    const url = `${ form.getAttribute('action') }/${ bookId }`;
-    submitForm(form, url).then(() => {
-        typeof refreshBookData === 'function' && refreshBookData();
+    const formElement = document.getElementById('book-modify-form');
+    const bookId = formElement.querySelector('#book-modify-id').value;
+    const url = `${ formElement.getAttribute('action') }/${ bookId }`;
+    submitForm(formElement, url).then(success => {
+        if (!success) return;
+        typeof refreshBookData === 'function' && refreshBookData(false);
     });
 }
