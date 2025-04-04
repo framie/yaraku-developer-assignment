@@ -8,6 +8,7 @@ use App\Book;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
@@ -104,11 +105,18 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        // Validates the data and will automatically send 422 error response on failure.
-        $validatedData = $request->validate([
+        // Validates the data.
+        $data = $request->only('title', 'author_name');
+        $validator = Validator::make($data, [
             'title' => 'required|unique:books,title|max:255',
             'author_name' => 'required|string|max:255',
+            'publish_date' => 'nullable|date_format:Y-m-d'
         ]);
+
+        // Return a 422 response if validation fails.
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Create author if not already existing.
         $author = Author::findOrCreateByName($request->input('author_name'));
@@ -131,7 +139,7 @@ class BookController extends Controller
             ]);
         }
 
-        return redirect()->route('books.index')->with('message', $message);
+        return redirect()->route('books.index')->with(['message' => $message]);
     }
 
     /**
@@ -168,13 +176,29 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        $validated = $request->validate([
+        // Validates the data.
+        $data = $request->only('title', 'author_name', 'publish_date');
+
+        $validator = Validator::make($data, [
             'title' => 'required|string|max:255',
             'author_name' => 'required|string|max:255',
             'publish_date' => 'nullable|date_format:Y-m-d'
         ]);
 
-        $book->update($validated);
+        // Return a 422 response if validation fails.
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Create author if not already existing.
+        $author = Author::findOrCreateByName($request->input('author_name'));
+        $publishDate = $request->input('publish_date');
+
+        $book->update([
+            'title' => $data['title'],
+            'author_id' => $author->id,
+            'published_at' => strtotime($publishDate) ? $publishDate : null
+        ]);
 
         $message = 'Book updated successfully.';
 
