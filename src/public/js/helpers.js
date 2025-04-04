@@ -53,26 +53,54 @@ const ajax = async (path, method, token, body = {}, headers = {}) => {
     return { status: response.status, body: data };
 };
 
+const openModal = (id) => {
+    const modalElement = document.getElementById(id);
+    if (modalElement) modalElement.classList.remove('fade');
+    const messageElement = modalElement.querySelector('.message');
+    if (messageElement) messageElement.innerText = '';
+}
+
+const closeModal = (id, event = null) => {
+    // Ensure that the element being clicked is the target of the handler.
+    // This is needed for closing the modal when clicking the background.
+    if (event && event.target !== event.currentTarget) return;
+    const modalElement = document.getElementById(id);
+    if (modalElement) modalElement.classList.add('fade');
+}
+
 /**
  * Helper function to submits a form by sending AJAX request via specified method.
  *
  * @returns {void}
  */
-const submitForm = (form, url) => {
-    const token = form.querySelector('input[name="_token"]').value;
-    const message = form.querySelector('.message');
-    if (message) message.textContent = '';
+const submitForm = (formElement, url) => {
+    const token = formElement.querySelector('input[name="_token"]').value;
+    const messageElement = formElement.querySelector('.message');
+    // If form message element exists, reset it.
+    if (messageElement) {
+        messageElement.textContent = '';
+        messageElement.classList.remove('error');
+    }
 
-    return ajax(url, 'POST', token, new FormData(form))
+    return ajax(url, 'POST', token, new FormData(formElement))
         .then(({ status, body }) => {
+            if (!messageElement) return true;
+            // Set form message based on response type.
             if (status !== 200) {
+                messageElement.classList.add('error');
                 Object.values(body.errors).forEach(error => {
-                    if (message) message.textContent += `${ error } `;
-                })
-            } else {
-                if (message) message.textContent = body.message;
-                form.reset();
+                    messageElement.textContent += `${ error } `;
+                });
+                return false;
             }
+            messageElement.textContent = body.message;
+            return true;
         })
         .catch(error => console.error('Error when submitting form:', error));
+}
+
+const setLoadingState = (state) => {
+    const bodyElement = document.querySelector('body');
+    if (state) bodyElement.classList.add('is-loading');
+    else bodyElement.classList.remove('is-loading');
 }
